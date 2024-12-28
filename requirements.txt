@@ -1,0 +1,12 @@
+langchain
+huggingface_hub
+openai
+google-search-results
+tiktoken
+chromadb
+lark
+streamlit
+langchain-openai
+qdrant-client
+langchain-qdrant
+langchain-community 
