@@ -63,7 +63,7 @@ docs = [
 ]
 
 # Main app title
-st.title("🍷 Wine Query System")
+st.title("🍷 Natural Language Wine Search")
 st.markdown("Search our wine collection using natural language queries. The system understands complex queries about wine characteristics, ratings, years, and more.")
 
 # Example queries in the sidebar
