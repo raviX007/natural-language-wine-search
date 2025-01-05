@@ -1,4 +1,4 @@
-# 🍷 Wine Query System
+# 🍷 Natural Language Wine Search
 
 A sophisticated natural language querying system for searching and exploring a wine collection, powered by **Streamlit**, **LangChain**, **OpenAI**, and **Qdrant**.
 
