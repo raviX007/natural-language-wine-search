@@ -9,20 +9,16 @@ from qdrant_client import QdrantClient, models
 from langchain_community.query_constructors.qdrant import QdrantTranslator
 
 
-# Page config
+
 st.set_page_config(page_title="Wine Query System", layout="wide")
 
-# Sidebar for API keys and configuration
 st.sidebar.title("Configuration")
 
-# OpenAI API key input
 openai_api_key = st.sidebar.text_input("Enter your OpenAI API key", type="password")
 
-# Qdrant configuration
 
 collection_name = "wine_collection"
 
-# Sample wine data
 docs = [
     Document(
         page_content="Complex, layered, rich red with dark fruit flavors",
@@ -62,11 +58,9 @@ docs = [
     ),
 ]
 
-# Main app title
 st.title("🍷 Natural Language Wine Search")
 st.markdown("Search our wine collection using natural language queries. The system understands complex queries about wine characteristics, ratings, years, and more.")
 
-# Example queries in the sidebar
 st.sidebar.subheader("Example Queries")
 example_queries = [
     "Show me all red wines",
@@ -87,7 +81,6 @@ def init_qdrant():
     """Initialize Qdrant client and create collection if it doesn't exist"""
     client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
     
-    # Check if collection exists, if not create it
     try:
         client.get_collection(collection_name)
     except:
@@ -103,14 +96,11 @@ def init_qdrant():
 
 if openai_api_key:
     try:
-        # Initialize OpenAI
         os.environ["OPENAI_API_KEY"] = openai_api_key
         
-        # Initialize components
         embeddings = OpenAIEmbeddings()
         qdrant_client = init_qdrant()
         
-        # Initialize vectorstore
         vectorstore = Qdrant(
             client=qdrant_client,
             collection_name=collection_name,
@@ -119,7 +109,6 @@ if openai_api_key:
             
         )
         
-        # Add reset button
         if st.sidebar.button("Reset Database"):
             # Delete and recreate collection
             qdrant_client.delete_collection(collection_name)
@@ -131,18 +120,15 @@ if openai_api_key:
                     
                 )
             )
-            # Add documents
             vectorstore.add_documents(docs)
             st.success("Database has been reset!")
 
-        # Add documents if collection is empty
         collection_info = qdrant_client.get_collection(collection_name)
         if collection_info.points_count == 0:
             vectorstore.add_documents(docs)
         
         llm = OpenAI(temperature=0)
 
-        # Define metadata fields
         metadata_field_info = [
             AttributeInfo(
                 name="grape",
@@ -178,7 +164,6 @@ if openai_api_key:
         
         document_content_description = "Brief description of the wine"
 
-        # Create retriever with limit capability
         retriever = SelfQueryRetriever.from_llm(
         llm=llm,
         vectorstore=vectorstore,
@@ -190,7 +175,6 @@ if openai_api_key:
     )
         
 
-        # Query input
         query = st.text_input(
             "Enter your wine search query:",
             placeholder="e.g., Show me red wines with a rating above 95"
@@ -199,13 +183,11 @@ if openai_api_key:
         if query:
             with st.spinner("Searching..."):
                 try:
-                    # Get query results
                     results = retriever.get_relevant_documents(query)
                     
                     if results:
                         st.subheader("Search Results")
                         
-                        # Display results in expandable cards
                         for doc in results:
                             with st.expander(f"🍷 {doc.metadata['name']} ({doc.metadata['year']})"):
                                 st.markdown(f"""
@@ -229,6 +211,5 @@ if openai_api_key:
 else:
     st.info("👈 Please enter your OpenAI API key in the sidebar to start searching.")
 
-# Footer
 st.sidebar.markdown("---")
 st.sidebar.markdown("Made with ❤️ using LangChain and Qdrant")
